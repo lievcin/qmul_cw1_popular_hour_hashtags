@@ -20,14 +20,25 @@
     		parser.parse(tweet);
 
     		if (parser.isValidTweet() && parser.getTweetHour() == 2) {
-    			StringTokenizer tweet_words = new StringTokenizer(parser.getTweetBody(), "-- \t\n\r\f,.:;?![]'\"");
+    			String[] tweet_words = parser.getTweetBody().split("\\s");
+    			// StringTokenizer tweet_words = new StringTokenizer(parser.getTweetBody(), "-- \t\n\r\f,.:;?![]'\"");
+    			for (int t = 0; t < tweet_words.length; t++)
+    				try {
+		          if (tweet_words[t].charAt(0) == '#') {
+		          	data.set(tweet_words[t]);
+		          	context.write(data, one);
+		          }
+		        } catch(Exception e) {
+            System.out.println("Some empty bodies...");
+        	}
 
-	        while (tweet_words.hasMoreTokens()) {
-	          if (tweet_words.nextToken().charAt(0) == '#') {
-	          	data.set(tweet_words.nextToken());
-	          	context.write(data, one);
-	          }
-	        }
+	        // while (tweet_words.hasMoreTokens()) {
+
+	          // if (tweet_words.nextToken().charAt(0) == '#') {
+	          // 	data.set(tweet_words.nextToken());
+	          // 	context.write(data, one);
+	          // }
+	        // }
     			// data.set(parser.getTweetHour());
     			// context.write(data, one);
     		}
