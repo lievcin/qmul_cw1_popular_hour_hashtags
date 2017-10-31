@@ -1,12 +1,8 @@
 	import java.io.IOException;
-	// import java.util.Calendar;
 	import java.util.StringTokenizer;
 	import org.apache.hadoop.io.IntWritable;
 	import org.apache.hadoop.io.Text;
-	// import org.apache.hadoop.io.LongWritable;
-	// import org.apache.hadoop.io.DoubleWritable;
 	import org.apache.hadoop.mapreduce.Mapper;
-	// import tweets_parser.java;
 
 	public class HashtagsMapper extends Mapper<Object, Text, Text, IntWritable> {
 
@@ -20,27 +16,19 @@
     		parser.parse(tweet);
 
     		if (parser.isValidTweet() && parser.getTweetHour() == 2) {
+    			// hour == 2 based on our previous mapReduce job to get the hour with the highest count of tweets.
     			String[] tweet_words = parser.getTweetBody().split("\\s");
-    			// StringTokenizer tweet_words = new StringTokenizer(parser.getTweetBody(), "-- \t\n\r\f,.:;?![]'\"");
     			for (int t = 0; t < tweet_words.length; t++)
     				try {
 		          if (tweet_words[t].charAt(0) == '#') {
-		          	data.set(tweet_words[t]);
+		          	data.set(tweet_words[t].toLowerCase().replaceAll("[^\\p{ASCII}]", ""));
+		          	//here I deliberately don't want to have hashtags with weird emojis and stuff.
+		          	//ideally it should get me a more concise list of hashtags
 		          	context.write(data, one);
 		          }
 		        } catch(Exception e) {
-            System.out.println("Some empty bodies...");
+            System.out.println("Some invalid tweet body");
         	}
-
-	        // while (tweet_words.hasMoreTokens()) {
-
-	          // if (tweet_words.nextToken().charAt(0) == '#') {
-	          // 	data.set(tweet_words.nextToken());
-	          // 	context.write(data, one);
-	          // }
-	        // }
-    			// data.set(parser.getTweetHour());
-    			// context.write(data, one);
     		}
 
     }
